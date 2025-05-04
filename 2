@@ -1,0 +1,35 @@
+import xmlrpc.client
+def main():
+    server = xmlrpc.client.ServerProxy('http://localhost:8000')
+    print("Available operations: add, subtract, multiply, divide")
+    a = int(input("Enter first number: "))
+    b = int(input("Enter second number: "))
+    operation = input("Enter operation to perform: ").strip().lower()
+    result = server.perform_operation(a, b, operation)
+    print("Result:", result)
+if __name__ == '__main__':
+    main()
+
+Server:
+from xmlrpc.server import SimpleXMLRPCServer
+# Define arithmetic operations
+def arithmetic_operation(a, b, operation):
+    if operation == 'add':
+        return a + b
+    elif operation == 'subtract':
+        return a - b
+    elif operation == 'multiply':
+        return a * b
+    elif operation == 'divide':
+        if b == 0:
+            return "Error: Division by zero"
+        return a / b
+    else:
+        return "Error: Unsupported operation"
+# Set up XML-RPC server
+server = SimpleXMLRPCServer(('localhost', 8000))
+print("Server is running on port 8000...")
+# Register function with the server
+server.register_function(arithmetic_operation, 'perform_operation')
+# Start the server
+server.serve_forever()
